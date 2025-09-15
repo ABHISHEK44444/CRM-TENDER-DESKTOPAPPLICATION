@@ -418,36 +418,21 @@ const App: React.FC = () => {
   
   const handleUpdateTender = useCallback(async (updatedTenderData: Tender) => {
     const originalTender = tenders.find(t => t.id === updatedTenderData.id);
-    if (!originalTender) {
-        console.error("Original tender not found for optimistic update. Performing direct update.");
-        const serverTender = await api.updateTender(updatedTenderData.id, updatedTenderData);
-        updateTenderState(serverTender);
-        return;
-    }
+    const updatedTender = await api.updateTender(updatedTenderData.id, updatedTenderData);
 
-    // --- OPTIMISTIC UI UPDATE ---
-    // 1. Immediately update the UI with the new data for a responsive feel.
-    updateTenderState(updatedTenderData);
-
-    try {
-        // 2. Send the API request to the server in the background.
-        const updatedTenderFromServer = await api.updateTender(updatedTenderData.id, updatedTenderData);
-        
-        // 3. Resync the state with the definitive response from the server.
-        updateTenderState(updatedTenderFromServer);
-
-        // --- Post-success logic ---
+    if (originalTender) {
         const now = new Date().toISOString();
         const originalAssigned = new Set(originalTender.assignedTo || []);
-        const newAssigned = new Set(updatedTenderFromServer.assignedTo || []);
+        const newAssigned = new Set(updatedTender.assignedTo || []);
         
         newAssigned.forEach(userId => {
             if (!originalAssigned.has(userId)) {
+                // User was newly assigned
                 const notification: AppNotification = {
-                    id: `${updatedTenderFromServer.id}-assign-${userId}-${Date.now()}`,
-                    message: `You have been assigned to the tender: "${updatedTenderFromServer.title}".`,
+                    id: `${updatedTender.id}-assign-${userId}-${Date.now()}`,
+                    message: `You have been assigned to the tender: "${updatedTender.title}".`,
                     type: 'assignment',
-                    relatedTenderId: updatedTenderFromServer.id,
+                    relatedTenderId: updatedTender.id,
                     timestamp: now,
                     recipientId: userId,
                     isRead: false,
@@ -455,18 +440,13 @@ const App: React.FC = () => {
                 addNotification(notification);
             }
         });
-
-        if (updatedTenderFromServer.status === TenderStatus.Lost && !updatedTenderFromServer.reasonForLoss) {
-            setTenderToUpdateLoss(updatedTenderFromServer);
-            setReasonForLossModalOpen(true);
-        }
-        
-    } catch (error) {
-        // 4. If the API call fails, revert the changes and notify the user.
-        console.error("Failed to save tender changes:", error);
-        alert("Error: Could not save tender changes to the server. Reverting your changes.");
-        updateTenderState(originalTender);
     }
+
+    if (updatedTender.status === TenderStatus.Lost && !updatedTender.reasonForLoss) {
+        setTenderToUpdateLoss(updatedTender);
+        setReasonForLossModalOpen(true);
+    }
+    updateTenderState(updatedTender);
   }, [tenders, addNotification, updateTenderState]);
 
   const handleDeleteTender = useCallback(async (tenderId: string) => {
