@@ -17,8 +17,32 @@ const dataRoutes = require('./routes/data');
 
 const app = express();
 
+// CORS Configuration
+// This is a critical security step for production.
+// Set the FRONTEND_URL environment variable in your backend hosting (e.g., Render)
+// to your Vercel app's URL (e.g., https://your-app-name.vercel.app).
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173', // For local development
+].filter(Boolean); // Filter out undefined/null values from the list
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+
 // Middleware
-app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Increase payload size limit for file uploads
 
 // Static file serving for uploads - explicitly add CORS for this route
@@ -43,8 +67,6 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5001;
 
-// Remove or comment out the server start block for Vercel
-/*
 const start = async () => {
     try {
         await connectDB(process.env.MONGO_URI);
@@ -54,14 +76,5 @@ const start = async () => {
         console.log(error);
     }
 };
+
 start();
-*/
-
-// Vercel will handle the database connection and server start
-connectDB(process.env.MONGO_URI)
-    .then(() => console.log('Connected to MongoDB...'))
-    .catch(err => console.error('MongoDB connection error:', err));
-
-
-// Export the app for Vercel
-module.exports = app;
