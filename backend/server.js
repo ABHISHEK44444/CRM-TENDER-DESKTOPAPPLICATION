@@ -43,6 +43,8 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5001;
 
+// Remove or comment out the server start block for Vercel
+/*
 const start = async () => {
     try {
         await connectDB(process.env.MONGO_URI);
@@ -52,5 +54,14 @@ const start = async () => {
         console.log(error);
     }
 };
-
 start();
+*/
+
+// Vercel will handle the database connection and server start
+connectDB(process.env.MONGO_URI)
+    .then(() => console.log('Connected to MongoDB...'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
+
+// Export the app for Vercel
+module.exports = app;
