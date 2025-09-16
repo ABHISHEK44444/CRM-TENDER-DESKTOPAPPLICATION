@@ -3,7 +3,6 @@ import { NewTenderData, Tender, NewClientData, Client, Contact, ContactData, Int
 export const SERVER_BASE_URL = '';
 const API_BASE_URL = `${SERVER_BASE_URL}/api`;
 
-
 const handleResponse = async (response: Response) => {
     if (!response.ok) {
         const error = await response.json();
