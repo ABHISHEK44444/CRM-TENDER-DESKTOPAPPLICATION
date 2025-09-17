@@ -22,6 +22,9 @@ const FinancialRequestSchema = new Schema({
     }
 }, { timestamps: true });
 
+// Add index for sorting performance
+FinancialRequestSchema.index({ requestDate: -1 });
+
 FinancialRequestSchema.set('toJSON', {
     transform: (doc, ret) => {
         delete ret._id;
