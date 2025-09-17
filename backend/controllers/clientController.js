@@ -2,7 +2,10 @@ const Client = require('../models/client');
 
 const getAllClients = async (req, res) => {
     try {
-        const clients = await Client.find({}).sort({ name: 1 });
+        // Select only the fields needed for the list view to reduce payload size
+        const clients = await Client.find({})
+            .select('id name category status contacts potentialValue')
+            .sort({ name: 1 });
         res.status(200).json(clients);
     } catch (error) {
         res.status(500).json({ message: error.message });
