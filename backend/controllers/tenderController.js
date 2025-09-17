@@ -4,10 +4,7 @@ const { createDocumentFromUpload, saveFileFromDataUrl } = require('../utils/tend
 
 const getAllTenders = async (req, res) => {
     try {
-        // Select only the fields needed for the list view to reduce payload size
-        const tenders = await Tender.find({})
-            .select('id title tenderNumber jurisdiction clientName status deadline assignedTo value')
-            .sort({ createdAt: -1 });
+        const tenders = await Tender.find({}).sort({ createdAt: -1 });
         res.status(200).json(tenders);
     } catch (error) {
         res.status(500).json({ message: error.message });
