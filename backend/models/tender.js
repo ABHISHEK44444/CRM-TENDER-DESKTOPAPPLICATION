@@ -140,9 +140,6 @@ const TenderSchema = new Schema({
     sellerRequiredDocuments: [String]
 }, { timestamps: true });
 
-// Add index for sorting performance
-TenderSchema.index({ createdAt: -1 });
-
 TenderSchema.set('toJSON', {
     transform: (doc, ret) => {
         delete ret._id;
