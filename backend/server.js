@@ -21,17 +21,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Increase payload size limit for file uploads
 
-// Connect to Database
-// For serverless environments like Vercel, the connection is established once
-// when the function is initialized (cold start) and reused for subsequent requests.
-connectDB(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB connection successful.'))
-    .catch(err => console.error('MongoDB connection error:', err));
-
-
 // Static file serving for uploads - explicitly add CORS for this route
-// WARNING: This will NOT work in a standard Vercel deployment as the filesystem is read-only.
-// For production, you must use a cloud storage service like Vercel Blob, AWS S3, etc.
 app.use('/uploads', cors(), express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
@@ -51,6 +41,16 @@ app.use((err, req, res, next) => {
     res.status(500).send({ message: 'Something went wrong!', error: err.message });
 });
 
-// Export the Express app for Vercel to handle.
-// Vercel will automatically handle starting the server.
-module.exports = app;
+const PORT = process.env.PORT || 5001;
+
+const start = async () => {
+    try {
+        await connectDB(process.env.MONGO_URI);
+        console.log('Connected to MongoDB...');
+        app.listen(PORT, () => console.log(`Server is listening on port ${PORT}...`));
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+start();
