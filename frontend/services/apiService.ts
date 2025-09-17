@@ -2,7 +2,7 @@ import { NewTenderData, Tender, NewClientData, Client, Contact, ContactData, Int
 
 // Use environment variable for production, fallback to localhost for development.
 // Set VITE_SERVER_BASE_URL in your Vercel deployment environment to your backend URL (e.g., https://your-backend.onrender.com).
-export const SERVER_BASE_URL = process.env.VITE_SERVER_BASE_URL || 'http://localhost:5001';
+export const SERVER_BASE_URL = 'https://crm-tender-desktopapplication-ram4.vercel.app';
 const API_BASE_URL = `${SERVER_BASE_URL}/api`;
 
 const handleResponse = async (response: Response) => {
