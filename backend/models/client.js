@@ -44,6 +44,8 @@ const ClientSchema = new mongoose.Schema({
     interactions: [InteractionLogSchema]
 }, { timestamps: true });
 
+// Add index for sorting performance
+ClientSchema.index({ name: 1 });
 
 ClientSchema.set('toJSON', {
     transform: (doc, ret) => {
