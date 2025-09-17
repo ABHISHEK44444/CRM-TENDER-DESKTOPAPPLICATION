@@ -48,6 +48,15 @@ app.use(express.json({ limit: '50mb' })); // Increase payload size limit for fil
 // Static file serving for uploads - explicitly add CORS for this route
 app.use('/uploads', cors(), express.static(path.join(__dirname, 'uploads')));
 
+// Root Route for Health Check / Welcome Message
+app.get('/', (req, res) => {
+    res.status(200).json({ 
+        message: "Welcome to the M Intergraph CRM & Tender Management API!",
+        status: "OK",
+        timestamp: new Date().toISOString()
+    });
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tenders', tenderRoutes);
