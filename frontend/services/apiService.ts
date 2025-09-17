@@ -1,6 +1,6 @@
 import { NewTenderData, Tender, NewClientData, Client, Contact, ContactData, InteractionLog, FinancialRequestType, User, NewUserData, OEM, NewOemData, BiddingTemplate, Product, AssignmentStatus } from '../types';
 
-export const SERVER_BASE_URL = '';
+export const SERVER_BASE_URL = 'https://crm-tender-desktopapplication.vercel.app';
 const API_BASE_URL = `${SERVER_BASE_URL}/api`;
 
 
