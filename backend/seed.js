@@ -11,6 +11,7 @@ const FinancialRequest = require('./models/financialRequest');
 const Department = require('./models/department');
 const Designation = require('./models/designation');
 const BiddingTemplate = require('./models/biddingTemplate');
+const StandardProcess = require('./models/standardProcess');
 
 // Import mock data (you'll need to copy this from your frontend constants.tsx)
 const {
@@ -29,7 +30,8 @@ const seedDatabase = async () => {
         await Promise.all([
             Department.deleteMany(), Designation.deleteMany(), User.deleteMany(),
             Client.deleteMany(), OEM.deleteMany(), Product.deleteMany(),
-            Tender.deleteMany(), FinancialRequest.deleteMany(), BiddingTemplate.deleteMany()
+            Tender.deleteMany(), FinancialRequest.deleteMany(), BiddingTemplate.deleteMany(),
+            StandardProcess.deleteMany()
         ]);
         console.log('Data cleared.');
 
