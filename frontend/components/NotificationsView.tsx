@@ -13,14 +13,14 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, on
     
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
-    const groupedNotifications = notifications.reduce((acc, notif) => {
+    const groupedNotifications = notifications.reduce((acc: Record<string, AppNotification[]>, notif) => {
         const date = new Date(notif.timestamp).toDateString();
         if (!acc[date]) {
             acc[date] = [];
         }
         acc[date].push(notif);
         return acc;
-    }, {} as Record<string, AppNotification[]>);
+    }, {});
 
     const getGroupTitle = (dateString: string) => {
         const today = new Date().toDateString();
