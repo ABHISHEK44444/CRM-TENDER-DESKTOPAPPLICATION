@@ -136,11 +136,13 @@ const App: React.FC = () => {
     try {
         const [
             tendersData, clientsData, usersData, oemsData, productsData,
-            departmentsData, designationsData, finRequestsData, templatesData
+            departmentsData, designationsData, finRequestsData, templatesData,
+            processStateData
         ] = await Promise.all([
             api.getData('/tenders'), api.getData('/clients'), api.getData('/users'),
             api.getData('/oems'), api.getData('/products'), api.getData('/data/departments'),
-            api.getData('/data/designations'), api.getData('/financial-requests'), api.getBiddingTemplates()
+            api.getData('/data/designations'), api.getData('/financial-requests'), api.getBiddingTemplates(),
+            api.getStandardProcessState()
         ]);
         setTenders(tendersData);
         setClients(clientsData);
@@ -151,6 +153,7 @@ const App: React.FC = () => {
         setDesignations(designationsData);
         setFinancialRequests(finRequestsData);
         setBiddingTemplates(templatesData);
+        setStandardProcessState(processStateData);
     } catch (error) {
         console.error("Failed to fetch data from backend:", error);
     } finally {
@@ -692,6 +695,16 @@ const App: React.FC = () => {
         setCurrentView('tenders');
     }, []);
 
+    const handleUpdateStandardProcess = useCallback(async (newState: StandardProcessState) => {
+        setStandardProcessState(newState); // Optimistic update
+        try {
+            await api.updateStandardProcessState(newState);
+        } catch (error) {
+            console.error("Failed to save SOP state:", error);
+            // Here you might want to add a user notification that the save failed
+        }
+    }, []);
+
     const mainContent = () => {
         if (isLoading) {
             return <div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-500"></div></div>;
@@ -729,7 +742,7 @@ const App: React.FC = () => {
             case 'admin': return <AdminView users={users} departments={departments} designations={designations} biddingTemplates={biddingTemplates} products={products} onAddUser={() => setUserFormModalOpen(true)} onEditUser={(user) => {setEditingUser(user); setUserFormModalOpen(true);}} onUpdateUserStatus={handleUpdateUserStatus} onDeleteUser={(user) => setUserToDelete(user)} currentUser={currentUser!} onSaveDepartment={(name) => setDepartments(prev => [...prev, {id: `dept${Date.now()}`, name}])} onDeleteDepartment={(id) => setDepartments(prev => prev.filter(d => d.id !== id))} onSaveDesignation={(name) => setDesignations(prev => [...prev, {id: `desig${Date.now()}`, name}])} onDeleteDesignation={(id) => setDesignations(prev => prev.filter(d => d.id !== id))} onSaveTemplate={handleSaveTemplate} onDeleteTemplate={handleDeleteTemplate} onAddOrUpdateProduct={handleSaveProduct} onEditProduct={(product) => { setEditingProduct(product); setIsProductFormModalOpen(true); }} onDeleteProduct={handleDeleteProduct} />;
             case 'reporting': return <ReportingView tenders={tenders} clients={clients} users={users} financialRequests={financialRequests} activityLog={systemActivityLog} currentUser={currentUser!} />;
             case 'oems': return <OemsView oems={oems} tenders={tenders} onAddOem={() => setOemFormModalOpen(true)} onEditOem={(oem) => {setEditingOem(oem); setOemFormModalOpen(true);}} />;
-            case 'processes': return <ProcessesView standardProcessState={standardProcessState} onUpdate={setStandardProcessState} />;
+            case 'processes': return <ProcessesView standardProcessState={standardProcessState} onUpdate={handleUpdateStandardProcess} />;
             case 'notifications': return <NotificationsView notifications={userNotifications} onNotificationClick={navigateToTender} onMarkAllAsRead={handleMarkAllAsRead} />;
             default: return <div>View not found</div>
         }
