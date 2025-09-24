@@ -1,8 +1,7 @@
-import { NewTenderData, Tender, NewClientData, Client, Contact, ContactData, InteractionLog, FinancialRequestType, User, NewUserData, OEM, NewOemData, BiddingTemplate, Product, AssignmentStatus } from '../types';
+import { NewTenderData, Tender, NewClientData, Client, Contact, ContactData, InteractionLog, FinancialRequestType, User, NewUserData, OEM, NewOemData, BiddingTemplate, Product, AssignmentStatus, StandardProcessState } from '../types';
 
-export const SERVER_BASE_URL = '';
+export const SERVER_BASE_URL = 'http://localhost:5001';
 const API_BASE_URL = `${SERVER_BASE_URL}/api`;
-
 
 const handleResponse = async (response: Response) => {
     if (!response.ok) {
@@ -188,4 +187,15 @@ export const saveBiddingTemplate = (template: BiddingTemplate): Promise<BiddingT
 };
 export const deleteBiddingTemplate = (id: string): Promise<any> => {
     return fetch(`${API_BASE_URL}/data/templates/${id}`, { method: 'DELETE' }).then(handleResponse);
+};
+
+// Standard Processes
+export const getStandardProcessState = (): Promise<StandardProcessState> => getData('/data/processes');
+
+export const updateStandardProcessState = (state: StandardProcessState): Promise<StandardProcessState> => {
+    return fetch(`${API_BASE_URL}/data/processes`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(state),
+    }).then(handleResponse);
 };
