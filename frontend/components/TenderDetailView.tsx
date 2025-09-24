@@ -823,7 +823,8 @@ const TenderDetailView: React.FC<TenderDetailViewProps> = ({ tender, onBack, onA
                                         </div>
                                         {(tender.assignedTo || []).length > 0 ? (
                                             (tender.assignedTo || []).map(id => userMap.get(id)).filter(Boolean).map(user => {
-                                                const response = tender.assignmentResponses?.[user!.id];
+                                                // FIX: Explicitly cast the assignment response to its correct type to resolve TS error.
+                                                const response = tender.assignmentResponses?.[user!.id] as AssignmentResponse | undefined;
                                                 const status = response?.status || AssignmentStatus.Pending;
                                                 const notes = response?.notes;
                                                 return (
