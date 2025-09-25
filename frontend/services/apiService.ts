@@ -1,6 +1,6 @@
 import { NewTenderData, Tender, NewClientData, Client, Contact, ContactData, InteractionLog, FinancialRequestType, User, NewUserData, OEM, NewOemData, BiddingTemplate, Product, AssignmentStatus, StandardProcessState } from '../types';
 
-export const SERVER_BASE_URL = 'http://localhost:5001';
+export const SERVER_BASE_URL = '';
 const API_BASE_URL = `${SERVER_BASE_URL}/api`;
 
 const handleResponse = async (response: Response) => {
