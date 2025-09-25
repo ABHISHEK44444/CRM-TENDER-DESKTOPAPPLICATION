@@ -21,8 +21,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Increase payload size limit for file uploads
 
-// Static file serving for uploads - explicitly add CORS for this route
-app.use('/uploads', cors(), express.static(path.join(__dirname, 'uploads')));
+// Static file serving for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
 app.use('/api/auth', authRoutes);
